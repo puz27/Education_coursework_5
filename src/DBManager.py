@@ -1,5 +1,5 @@
 import psycopg2
-
+from sql.queries import query_create_table_companies, query_create_table_vacancies
 
 class DBManager:
 
@@ -31,7 +31,7 @@ class DBManager:
         finally:
             connection.close()
 
-    def create_table(self, table_name: str):
+    def create_table(self, table_name: str, query: str):
 
         connection = psycopg2.connect(
             host=self.__host,
@@ -43,12 +43,7 @@ class DBManager:
         try:
             with connection:
                 with connection.cursor() as cursor:
-                    query_create_table = f"""
-                        CREATE TABLE {table_name}(
-                        customer_id VARCHAR(20) PRIMARY KEY,
-                        company_name VARCHAR(50) NOT NULL,
-        	            contact_name VARCHAR(30));
-        	            """
+                    query_create_table = query
 
                     cursor.execute(query_create_table)
                     connection.commit()
@@ -58,9 +53,8 @@ class DBManager:
         finally:
             connection.close()
 
-
-def get_companies_and_vacancies(self):
-    pass
+    def get_companies_and_vacancies(self):
+        pass
 
     def get_all_vacancies(self):
         pass
@@ -142,5 +136,5 @@ def send_query_create_tables() -> None:
 #send_query_create_tables()
 x = DBManager("localhost", "postgres", "123456")
 x.create_database("test")
-x.create_table("table_1")
-x.create_table("table_2")
+x.create_table("table_1", query_create_table_vacancies)
+x.create_table("table_2", query_create_table_companies)
