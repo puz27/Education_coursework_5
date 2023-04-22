@@ -3,8 +3,64 @@ import psycopg2
 
 class DBManager:
 
-    def get_companies_and_vacancies(self):
-        pass
+    def __init__(self, host: str, user: str, password: str):
+        self.__host = host
+        self.__user = user
+        self.__password = password
+        self.database = None
+
+    def create_database(self, database: str):
+
+        connection = psycopg2.connect(
+            host=self.__host,
+            database="postgres",
+            user=self.__user,
+            password=self.__password
+            )
+
+        connection.autocommit = True
+        try:
+            with connection.cursor() as cursor:
+                query_create_base = f"CREATE DATABASE {database}"
+                cursor.execute(query_create_base)
+                self.database = database
+                print(f"База данных {database} успешно создана.")
+
+        except psycopg2.Error:
+            print(f"БД:{database}. Ошибка с запросом создания БД.")
+        finally:
+            connection.close()
+
+    def create_table(self, table_name: str):
+
+        connection = psycopg2.connect(
+            host=self.__host,
+            database=self.database,
+            user=self.__user,
+            password=self.__password
+        )
+
+        try:
+            with connection:
+                with connection.cursor() as cursor:
+                    query_create_table = f"""
+                        CREATE TABLE {table_name}(
+                        customer_id VARCHAR(20) PRIMARY KEY,
+                        company_name VARCHAR(50) NOT NULL,
+        	            contact_name VARCHAR(30));
+        	            """
+
+                    cursor.execute(query_create_table)
+                    connection.commit()
+                    print(f"Создание таблицы {table_name} прошло успешно.")
+        except psycopg2.Error:
+            print(f"Ошибка с запросом при создании таблицы {table_name}.")
+        finally:
+            connection.close()
+
+
+def get_companies_and_vacancies(self):
+    pass
 
     def get_all_vacancies(self):
         pass
@@ -28,38 +84,63 @@ def send_query_create_tables() -> None:
     """
     connection = psycopg2.connect(
         host="localhost",
-        database="course",
+        database="postgres",
         user="postgres",
         password="123456"
     )
+
+    # Create database
+    connection.autocommit = True
     try:
-        with connection:
-            with connection.cursor() as cursor:
+        with connection.cursor() as cursor:
+            query_create_base = "CREATE DATABASE companies_information"
+            cursor.execute(query_create_base)
+            print("База данных успешно создана")
+        connection.close()
+    except psycopg2.Error:
+        print("Ошибка с запросом создания БД.")
+    finally:
+        connection.close()
+
+
+
+    connection2 = psycopg2.connect(
+        host="localhost",
+        database="companies_information",
+        user="postgres",
+        password="123456"
+    )
+
+    try:
+        with connection2:
+            with connection2.cursor() as cursor:
 
                 query_company = """
                 CREATE TABLE companies(
                 customer_id VARCHAR(20) PRIMARY KEY,
-                company_name VARCHAR(50) NOT NULL, 
+                company_name VARCHAR(50) NOT NULL,
 	            contact_name VARCHAR(30));
 	            """
 
                 query_vacancies = """
                 CREATE TABLE vacancies (
-                customer_id VARCHAR(20) PRIMARY KEY, 
-                company_name VARCHAR(50) NOT NULL, 
+                customer_id VARCHAR(20) PRIMARY KEY,
+                company_name VARCHAR(50) NOT NULL,
                 contact_name VARCHAR(30));
                 """
 
                 cursor.execute(query_company)
                 cursor.execute(query_vacancies)
-                connection.commit()
+                connection2.commit()
                 print(f"Операция над таблицей прошла успешно.")
     except psycopg2.Error:
         print("Ошибка с запросом.")
     finally:
-        connection.close()
+        connection2.close()
 
 
-send_query_create_tables()
-
-
+#send_query_create_tables()
+x = DBManager("localhost", "postgres", "123456")
+x.create_database("test")
+x.create_table("table_1")
+x.create_table("table_2")
