@@ -5,7 +5,7 @@ url_head_hunter = "https://api.hh.ru/employers"
 params = {
     "text": "газпром",
     "only_with_vacancies": "true",
-    "per_page": 10,
+    #"per_page": 10,
     "page": 1,
 }
 
@@ -40,11 +40,13 @@ for firm in all_firms:
         # print(vacancy["salary"])
         # print(vacancy["address"])
         #
-        print("---------------------------------------")
+        #print("---------------------------------------")
 
         # Add all vacancies of company  to list
         one_vacancy = (vacancy["id"], firm["id"], vacancy["name"], vacancy["salary"], vacancy["address"])
-        companies_data.append(one_vacancy)
+        vacancies_data.append(one_vacancy)
 
-    print(companies_data)
-    print(vacancies_data)
+# print(companies_data)
+print(vacancies_data)
+    # print("---------------------------------------")
+    # print(vacancies_data)

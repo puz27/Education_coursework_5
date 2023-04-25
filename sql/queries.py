@@ -1,16 +1,18 @@
 # Create table companies
 query_create_table_companies = f"""
                         CREATE TABLE companies (
-                        customer_id VARCHAR(20) PRIMARY KEY,
+                        company_id SERIAL PRIMARY KEY,
                         company_name VARCHAR(50) NOT NULL,
-        	            contact_name VARCHAR(30));
+        	            vacancies_count INT);
         	            """
 
 
 # Create table companies
 query_create_table_vacancies = """
                 CREATE TABLE vacancies (
-                customer_id VARCHAR(20) PRIMARY KEY,
-                company_name VARCHAR(50) NOT NULL,
-                contact_name VARCHAR(30));
+                vacancy_id SERIAL PRIMARY KEY,
+                company_id INTEGER REFERENCES companies (company_id),
+                vacancy_name VARCHAR(50) NOT NULL,
+                vacancy_salary VARCHAR(50),
+                vacancy_address VARCHAR(50));
                 """

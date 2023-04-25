@@ -1,6 +1,7 @@
 import psycopg2
 from sql.queries import query_create_table_companies, query_create_table_vacancies
 
+
 class DBManager:
 
     def __init__(self, host: str, user: str, password: str):
@@ -8,6 +9,7 @@ class DBManager:
         self.__user = user
         self.__password = password
         self.database = None
+        self.database = "cource"
 
     def create_database(self, database: str):
 
@@ -26,8 +28,8 @@ class DBManager:
                 self.database = database
                 print(f"База данных {database} успешно создана.")
 
-        except psycopg2.Error:
-            print(f"БД:{database}. Ошибка с запросом создания БД.")
+        except psycopg2.Error as er:
+            print(f"БД:{database}. Ошибка с запросом создания БД.\n{er}")
         finally:
             connection.close()
 
@@ -48,8 +50,28 @@ class DBManager:
                     cursor.execute(query_create_table)
                     connection.commit()
                     print(f"Создание таблицы {table_name} прошло успешно.")
-        except psycopg2.Error:
-            print(f"Ошибка с запросом при создании таблицы {table_name}.")
+        except psycopg2.Error as er:
+            print(f"Ошибка с запросом при создании таблицы {table_name}.\n{er}")
+        finally:
+            connection.close()
+
+    def insert_data(self, table: str, data: list) -> None:
+        connection = psycopg2.connect(
+            host=self.__host,
+            database=self.database,
+            user=self.__user,
+            password=self.__password
+        )
+        try:
+            with connection:
+                with connection.cursor() as cursor:
+                    col_count = "".join("%s," * len(data[0]))
+                    query = f"INSERT INTO {table} VALUES ({col_count[:-1]})"
+                    cursor.executemany(query, data)
+                    connection.commit()
+                    print(f"Операция над таблицей {table} прошла успешно.")
+        except psycopg2.Error as er:
+            print(f"Ошибка с запросом.\n{er}")
         finally:
             connection.close()
 
@@ -135,6 +157,12 @@ def send_query_create_tables() -> None:
 
 #send_query_create_tables()
 x = DBManager("localhost", "postgres", "123456")
-x.create_database("test")
-x.create_table("table_1", query_create_table_vacancies)
-x.create_table("table_2", query_create_table_companies)
+
+# x.create_database("cource")
+# x.create_table("companies", query_create_table_companies)
+#x.create_table("vacancies", query_create_table_vacancies)
+
+data = [(666, "test_test", 10)]
+data2 = [(999, 666, "test_test", "zarplata", "addreeessssss")]
+x.insert_data("companies", data)
+x.insert_data("vacancies", data2)
