@@ -4,12 +4,11 @@ from sql.queries import query_create_table_companies, query_create_table_vacanci
 
 class DBManager:
 
-    def __init__(self, host: str, user: str, password: str):
+    def __init__(self, host: str, user: str, password: str, database=None):
         self.__host = host
         self.__user = user
         self.__password = password
-        self.database = None
-        self.database = "cource"
+        self.__database = database
 
     def create_database(self, database: str):
 
@@ -37,7 +36,7 @@ class DBManager:
 
         connection = psycopg2.connect(
             host=self.__host,
-            database=self.database,
+            database=self.__database,
             user=self.__user,
             password=self.__password
         )
@@ -58,7 +57,7 @@ class DBManager:
     def insert_data(self, table: str, data: list) -> None:
         connection = psycopg2.connect(
             host=self.__host,
-            database=self.database,
+            database=self.__database,
             user=self.__user,
             password=self.__password
         )
@@ -76,7 +75,25 @@ class DBManager:
             connection.close()
 
     def get_companies_and_vacancies(self):
-        pass
+        # SELECT  company_name, vacancies_count from companies
+        connection = psycopg2.connect(
+            host=self.__host,
+            database=self.__database,
+            user=self.__user,
+            password=self.__password
+        )
+        try:
+            with connection:
+                with connection.cursor() as cursor:
+                    query = f"SELECT  company_name, vacancies_count from companies"
+                    cursor.execute(query)
+                    connection.commit()
+                    print(*cursor.fetchall())
+        except psycopg2.Error as er:
+            print(f"Ошибка с запросом.\n{er}")
+        finally:
+            connection.close()
+
 
     def get_all_vacancies(self):
         pass
@@ -156,13 +173,13 @@ def send_query_create_tables() -> None:
 
 
 #send_query_create_tables()
-x = DBManager("localhost", "postgres", "123456")
-
-# x.create_database("cource")
+x = DBManager("localhost", "postgres", "123456", "cource2")
+#
+# x.create_database("cource2")
 # x.create_table("companies", query_create_table_companies)
-#x.create_table("vacancies", query_create_table_vacancies)
-
-data = [(666, "test_test", 10)]
-data2 = [(999, 666, "test_test", "zarplata", "addreeessssss")]
-x.insert_data("companies", data)
-x.insert_data("vacancies", data2)
+# x.create_table("vacancies", query_create_table_vacancies)
+# data = [(110, "test_test", 10)]
+# data2 = [(3, 110, "test_test", "zarplata", "addreeessssss")]
+# x.insert_data("companies", data)
+# x.insert_data("vacancies", data2)
+x.get_companies_and_vacancies()
