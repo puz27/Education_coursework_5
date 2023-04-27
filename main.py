@@ -5,7 +5,7 @@ url_head_hunter = "https://api.hh.ru/employers"
 params = {
     "text": "газпром",
     "only_with_vacancies": "true",
-    #"per_page": 10,
+    "per_page": 1,
     "page": 1,
 }
 
@@ -43,7 +43,18 @@ for firm in all_firms:
         #print("---------------------------------------")
 
         # Add all vacancies of company  to list
-        one_vacancy = (vacancy["id"], firm["id"], vacancy["name"], vacancy["salary"], vacancy["address"])
+
+        if vacancy["salary"]["from"] is not None:
+            salary_from = int(vacancy["salary"]["from"])
+        else:
+            salary_from = 0
+
+        if vacancy["salary"]["to"] is not None:
+            salary_to = int(vacancy["salary"]["to"])
+        else:
+            salary_to = 0
+
+        one_vacancy = (int(vacancy["id"]), int(firm["id"]), vacancy["name"], salary_from, salary_to,  vacancy["address"]["city"])
         vacancies_data.append(one_vacancy)
 
 # print(companies_data)

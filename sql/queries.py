@@ -12,7 +12,8 @@ query_create_table_vacancies = """
                 CREATE TABLE vacancies (
                 vacancy_id SERIAL PRIMARY KEY,
                 company_id INTEGER REFERENCES companies (company_id),
-                vacancy_name VARCHAR(50) NOT NULL,
-                vacancy_salary VARCHAR(50),
-                vacancy_address VARCHAR(50));
+                vacancy_name VARCHAR(100) NOT NULL,
+                vacancy_salary_from INT,
+                vacancy_salary_to INT,
+                vacancy_address VARCHAR(100));
                 """

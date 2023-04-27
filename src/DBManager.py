@@ -24,7 +24,7 @@ class DBManager:
             with connection.cursor() as cursor:
                 query_create_base = f"CREATE DATABASE {database}"
                 cursor.execute(query_create_base)
-                self.database = database
+                self.__database = database
                 print(f"База данных {database} успешно создана.")
 
         except psycopg2.Error as er:
@@ -173,13 +173,14 @@ def send_query_create_tables() -> None:
 
 
 #send_query_create_tables()
-x = DBManager("localhost", "postgres", "123456", "cource2")
-#
-# x.create_database("cource2")
+x = DBManager("localhost", "postgres", "123456", "cource")
+
+# x.create_database("cource")
 # x.create_table("companies", query_create_table_companies)
-# x.create_table("vacancies", query_create_table_vacancies)
-# data = [(110, "test_test", 10)]
-# data2 = [(3, 110, "test_test", "zarplata", "addreeessssss")]
-# x.insert_data("companies", data)
-# x.insert_data("vacancies", data2)
-x.get_companies_and_vacancies()
+#x.create_table("vacancies", query_create_table_vacancies)
+# data = [(4565267, "test_test", 10)]
+data2 = [(79478667, 4565267, 'Главный специалист отдела', 123, 12345, 'Новомосковский административный округ')]
+#
+# #x.insert_data("companies", data)
+x.insert_data("vacancies", data2)
+# x.get_companies_and_vacancies()
