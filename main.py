@@ -19,7 +19,8 @@ connector_to_db = DBManager("localhost", "postgres", "123456", "test_base")
 
 #connector_to_db.get_companies_and_vacancies()
 # connector_to_db.get_all_vacancies()
-connector_to_db.get_avg_salary()
+# connector_to_db.get_avg_salary()
+connector_to_db.get_vacancies_with_higher_salary()
 
 
 
