@@ -13,7 +13,7 @@ class RequestManager:
         params = {
             "text": company_name,
             "only_with_vacancies": "true",
-            "per_page": 1,
+            "per_page": 20,
             "page": 1,
         }
 
@@ -52,7 +52,5 @@ class RequestManager:
                 self.vacancies_data.append(one_vacancy)
 
 
-y = RequestManager()
-y.get_request("Газпром")
-print(y.vacancies_data)
+
 

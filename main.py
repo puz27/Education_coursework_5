@@ -1,3 +1,30 @@
+from src.RequestManager import RequestManager
+from src.DBManager import DBManager
+from sql.queries import query_create_table_companies, query_create_table_vacancies
+
+# head_hunter_data = RequestManager()
+# head_hunter_data.get_request("Газпром")
+# print(head_hunter_data.companies_data)
+# print(head_hunter_data.vacancies_data)
+# companies_data, vacancies_data = head_hunter_data.companies_data, head_hunter_data.vacancies_data
+
+connector_to_db = DBManager("localhost", "postgres", "123456", "test_base")
+#connector_to_db.create_database("test_base")
+
+# connector_to_db.create_table("companies", query_create_table_companies)
+# connector_to_db.create_table("vacancies", query_create_table_vacancies)
+
+# connector_to_db.insert_data("companies", companies_data)
+# connector_to_db.insert_data("vacancies", vacancies_data)
+
+connector_to_db.get_companies_and_vacancies()
+
+
+
+
+
+
+
 # import requests
 #
 #
