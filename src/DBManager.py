@@ -96,10 +96,55 @@ class DBManager:
             connection.close()
 
     def get_all_vacancies(self):
-        pass
+        # select companies.company_name, vacancy_name, vacancy_salary_from, vacancy_salary_to,
+        # vacancy_url  from vacancies INNER JOIN companies USING (company_id)
+        connection = psycopg2.connect(
+            host=self.__host,
+            database=self.__database,
+            user=self.__user,
+            password=self.__password
+        )
+        try:
+            with connection:
+                with connection.cursor() as cursor:
+                    query = f"""
+                    select companies.company_name, vacancy_name,
+                    vacancy_salary_from, vacancy_salary_to, vacancy_url  from vacancies
+                    INNER JOIN companies USING (company_id)"""
+                    cursor.execute(query)
+                    connection.commit()
+                    for vacancy in (cursor.fetchall()):
+                        print(*vacancy)
+        except psycopg2.Error as er:
+            print(f"Ошибка с запросом.\n{er}")
+        finally:
+            connection.close()
 
     def get_avg_salary(self):
-        pass
+        # select companies.company_name, AVG(vacancies.vacancy_salary_from) as average_salry from companies
+        # INNER JOIN vacancies USING (company_id) where vacancies.vacancy_salary_from <> 0
+        # GROUP BY company_name
+        connection = psycopg2.connect(
+            host=self.__host,
+            database=self.__database,
+            user=self.__user,
+            password=self.__password
+        )
+        try:
+            with connection:
+                with connection.cursor() as cursor:
+                    query = f"""
+                    select companies.company_name, AVG(vacancies.vacancy_salary_from)::numeric(10,0)  as average_salary from companies
+                    INNER JOIN vacancies USING (company_id) where vacancies.vacancy_salary_from <> 0
+                    GROUP BY company_name"""
+                    cursor.execute(query)
+                    connection.commit()
+                    for vacancy in (cursor.fetchall()):
+                        print(*vacancy)
+        except psycopg2.Error as er:
+            print(f"Ошибка с запросом.\n{er}")
+        finally:
+            connection.close()
 
     def get_vacancies_with_higher_salary(self):
         pass

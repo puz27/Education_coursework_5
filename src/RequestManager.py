@@ -13,7 +13,7 @@ class RequestManager:
         params = {
             "text": company_name,
             "only_with_vacancies": "true",
-            "per_page": 20,
+            "per_page": 10,
             "page": 1,
         }
 
@@ -47,8 +47,8 @@ class RequestManager:
                         salary_to = int(vacancy["salary"]["to"])
                     else:
                         salary_to = 0
-
-                one_vacancy = ((vacancy["id"]), (company["id"]), vacancy["name"], salary_from, salary_to, vacancy["area"]["name"])
+                print(vacancy)
+                one_vacancy = ((vacancy["id"]), (company["id"]), vacancy["name"], vacancy["url"], salary_from, salary_to, vacancy["area"]["name"])
                 self.vacancies_data.append(one_vacancy)
 
 
