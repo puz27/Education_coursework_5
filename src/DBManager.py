@@ -172,5 +172,27 @@ class DBManager:
         finally:
             connection.close()
 
-    def get_vacancies_with_keyword(self):
-        pass
+    def get_vacancies_with_keyword(self, search_word: str):
+        #SELECT * FROM vacancies
+        #WHERE vacancy_name LIKE '%спец%'
+        connection = psycopg2.connect(
+            host=self.__host,
+            database=self.__database,
+            user=self.__user,
+            password=self.__password
+        )
+        try:
+            with connection:
+                with connection.cursor() as cursor:
+                    query = f"""
+                    SELECT * FROM vacancies
+                    WHERE vacancy_name LIKE '%{search_word}%'
+                    """
+                    cursor.execute(query)
+                    connection.commit()
+                    for vacancy in (cursor.fetchall()):
+                        print(*vacancy)
+        except psycopg2.Error as er:
+            print(f"Ошибка с запросом.\n{er}")
+        finally:
+            connection.close()
