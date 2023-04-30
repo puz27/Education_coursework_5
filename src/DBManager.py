@@ -4,10 +4,11 @@ from sql.queries import query_create_table_companies, query_create_table_vacanci
 
 class DBManager:
 
-    def __init__(self, host: str, user: str, password: str, database=None):
-        self.__host = host
-        self.__user = user
-        self.__password = password
+    def __init__(self, connection_params: dict, database=None):
+        self.__host = connection_params["host"]
+        self.__user = connection_params["user"]
+        self.__password = connection_params["password"]
+        self.__port = connection_params["port"]
         self.__database = database
 
     def create_database(self, database: str):
@@ -16,7 +17,8 @@ class DBManager:
             host=self.__host,
             database="postgres",
             user=self.__user,
-            password=self.__password
+            password=self.__password,
+            port=self.__port
             )
 
         connection.autocommit = True
@@ -38,7 +40,8 @@ class DBManager:
             host=self.__host,
             database=self.__database,
             user=self.__user,
-            password=self.__password
+            password=self.__password,
+            port=self.__port
         )
 
         try:
@@ -59,7 +62,8 @@ class DBManager:
             host=self.__host,
             database=self.__database,
             user=self.__user,
-            password=self.__password
+            password=self.__password,
+            port=self.__port
         )
         try:
             with connection:
@@ -75,14 +79,12 @@ class DBManager:
             connection.close()
 
     def get_companies_and_vacancies(self):
-        # select companies.company_name, COUNT(*) from companies
-        # INNER JOIN vacancies USING (company_id)
-        # GROUP BY company_name
         connection = psycopg2.connect(
             host=self.__host,
             database=self.__database,
             user=self.__user,
-            password=self.__password
+            password=self.__password,
+            port=self.__port
         )
         try:
             with connection:
@@ -100,13 +102,12 @@ class DBManager:
             connection.close()
 
     def get_all_vacancies(self):
-        # select companies.company_name, vacancy_name, vacancy_salary_from, vacancy_salary_to,
-        # vacancy_url  from vacancies INNER JOIN companies USING (company_id)
         connection = psycopg2.connect(
             host=self.__host,
             database=self.__database,
             user=self.__user,
-            password=self.__password
+            password=self.__password,
+            port=self.__port
         )
         try:
             with connection:
@@ -125,14 +126,13 @@ class DBManager:
             connection.close()
 
     def get_avg_salary(self):
-        # select companies.company_name, AVG(vacancies.vacancy_salary_from) as average_salry from companies
-        # INNER JOIN vacancies USING (company_id) where vacancies.vacancy_salary_from <> 0
-        # GROUP BY company_name
+
         connection = psycopg2.connect(
             host=self.__host,
             database=self.__database,
             user=self.__user,
-            password=self.__password
+            password=self.__password,
+            port=self.__port
         )
         try:
             with connection:
@@ -151,13 +151,12 @@ class DBManager:
             connection.close()
 
     def get_vacancies_with_higher_salary(self):
-        #select vacancy_name, vacancy_salary_from from vacancies
-        #where vacancies.vacancy_salary_from <> 0 and vacancy_salary_from > (select AVG(vacancy_salary_from) from vacancies)
         connection = psycopg2.connect(
             host=self.__host,
             database=self.__database,
             user=self.__user,
-            password=self.__password
+            password=self.__password,
+            port=self.__port
         )
         try:
             with connection:
@@ -177,20 +176,20 @@ class DBManager:
             connection.close()
 
     def get_vacancies_with_keyword(self, search_word: str):
-        #SELECT * FROM vacancies
-        #WHERE vacancy_name LIKE '%спец%'
+
         connection = psycopg2.connect(
             host=self.__host,
             database=self.__database,
             user=self.__user,
-            password=self.__password
+            password=self.__password,
+            port=self.__port
         )
         try:
             with connection:
                 with connection.cursor() as cursor:
                     query = f"""
                     SELECT * FROM vacancies
-                    WHERE vacancy_name LIKE '%{search_word.lower()}%'
+                    WHERE vacancy_name LIKE '%{search_word}%'
                     """
                     cursor.execute(query)
                     connection.commit()
