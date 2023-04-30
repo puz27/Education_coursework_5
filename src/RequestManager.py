@@ -13,8 +13,8 @@ class RequestManager:
         params = {
             "text": company_name,
             "only_with_vacancies": "true",
-            "per_page": 10,
-            "page": 1,
+            "per_page": 50,
+            "page": 0,
         }
 
         response = requests.get(url_head_hunter, params=params)
@@ -23,14 +23,23 @@ class RequestManager:
         for company in all_companies:
             # Url for vacancies if company
             company_id_url = company["vacancies_url"]
+            print(company_id_url)
 
             # Add all companies (ID, Description, counts of vacancies) to list
-            one_company = (company["id"], company["name"], company["open_vacancies"])
+            one_company = (company["id"],
+                           company["name"])
             self.companies_data.append(one_company)
 
             # Get information about vacancies in company
-            vacancy_response = requests.get(company_id_url)
+            page_number = 0
+            params2 = {
+                "per_page": 50,
+                "page": page_number,
+            }
+
+            vacancy_response = requests.get(company_id_url, params=params2)
             vacancies_of_company = vacancy_response.json()["items"]
+
 
             for vacancy in vacancies_of_company:
 
@@ -47,10 +56,13 @@ class RequestManager:
                         salary_to = int(vacancy["salary"]["to"])
                     else:
                         salary_to = 0
-                print(vacancy)
-                one_vacancy = ((vacancy["id"]), (company["id"]), vacancy["name"], vacancy["url"], salary_from, salary_to, vacancy["area"]["name"])
+                # print(vacancy)
+                one_vacancy = (vacancy["id"],
+                               company["id"],
+                               vacancy["name"],
+                               vacancy["url"],
+                               salary_from,
+                               salary_to,
+                               vacancy["area"]["name"])
                 self.vacancies_data.append(one_vacancy)
-
-
-
 

@@ -2,8 +2,7 @@
 query_create_table_companies = f"""
 CREATE TABLE companies (
 company_id SERIAL PRIMARY KEY,
-company_name VARCHAR(100) NOT NULL,
-vacancies_count INT);
+company_name VARCHAR(100) NOT NULL);
 """
 
 

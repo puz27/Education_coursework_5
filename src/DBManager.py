@@ -75,7 +75,9 @@ class DBManager:
             connection.close()
 
     def get_companies_and_vacancies(self):
-        # SELECT  company_name, vacancies_count from companies
+        # select companies.company_name, COUNT(*) from companies
+        # INNER JOIN vacancies USING (company_id)
+        # GROUP BY company_name
         connection = psycopg2.connect(
             host=self.__host,
             database=self.__database,
@@ -85,7 +87,9 @@ class DBManager:
         try:
             with connection:
                 with connection.cursor() as cursor:
-                    query = f"SELECT  company_name, vacancies_count from companies"
+                    query = f"""select companies.company_name, COUNT(*) from companies
+                    INNER JOIN vacancies USING (company_id)
+                    GROUP BY company_name"""
                     cursor.execute(query)
                     connection.commit()
                     for company in (cursor.fetchall()):
@@ -186,7 +190,7 @@ class DBManager:
                 with connection.cursor() as cursor:
                     query = f"""
                     SELECT * FROM vacancies
-                    WHERE vacancy_name LIKE '%{search_word}%'
+                    WHERE vacancy_name LIKE '%{search_word.lower()}%'
                     """
                     cursor.execute(query)
                     connection.commit()
