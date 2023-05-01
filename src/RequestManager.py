@@ -15,7 +15,7 @@ class RequestManager:
         params_company = {
             "text": company_name,
             "only_with_vacancies": "true",
-            "per_page": 10,
+            "per_page": 50,
             "page": 0,
         }
         response = requests.get(url_company, params=params_company)
@@ -31,7 +31,7 @@ class RequestManager:
                 # Get information about vacancies in company
                 employer_id = company["id"]
                 page_number = 0
-                last_page = 1
+                last_page = 2
 
                 while page_number < last_page:
 
