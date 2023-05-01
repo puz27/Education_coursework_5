@@ -125,7 +125,7 @@ class DBManager:
         finally:
             connection.close()
 
-    def get_avg_salary(self):
+    def get_avg_salary_by_company(self):
 
         connection = psycopg2.connect(
             host=self.__host,
@@ -141,6 +141,30 @@ class DBManager:
                     SELECT companies.company_name, AVG(vacancies.vacancy_salary_from)::numeric(10,0)  AS average_salary FROM companies
                     INNER JOIN vacancies USING (company_id) WHERE vacancies.vacancy_salary_from <> 0
                     GROUP BY company_name"""
+                    cursor.execute(query)
+                    connection.commit()
+                    for vacancy in (cursor.fetchall()):
+                        print(*vacancy)
+        except psycopg2.Error as er:
+            print(f"Ошибка с запросом.\n{er}")
+        finally:
+            connection.close()
+
+    def get_avg_salary(self):
+
+        connection = psycopg2.connect(
+            host=self.__host,
+            database=self.__database,
+            user=self.__user,
+            password=self.__password,
+            port=self.__port
+        )
+        try:
+            with connection:
+                with connection.cursor() as cursor:
+                    query = f"""
+                    SELECT AVG(vacancy_salary_from)::numeric(10,0) FROM vacancies
+                    """
                     cursor.execute(query)
                     connection.commit()
                     for vacancy in (cursor.fetchall()):
