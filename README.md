@@ -26,17 +26,15 @@
 * requirements.txt
 ## Интерфейс программы
 * Пользователь выбирает вариант работы с БД
-
-![img_1.png](img_1.png)
+![img_5.png](images/img_5.png)
 * Пользователь выбирает вариант обработки данных из HEAD HUNTER
-*![img_2.png](img_2.png)
+*![img_2.png](images/img_2.png)
 *Идет обработка данных
-![img.png](img.png)
+![img.png](images/img.png)
 * Пользователь выбирает варианты запросов в БД
-![img_3.png](img_3.png)
-
+![img_3.png](images/img_3.png)
 * ERD 
-![img_4.png](img_4.png)
+![img_4.png](images/img_4.png)
 ## Дополнительно
 * Автор: Авраменко Николай
 * Дата релиза: 2023/05/05
