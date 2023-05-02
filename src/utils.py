@@ -1,4 +1,11 @@
 from configparser import ConfigParser
+from tqdm import tqdm
+from time import sleep
+
+
+def progress_bar():
+   for _ in tqdm(range(100), ncols=80, ascii=True, desc='Total'):
+      sleep(0.1)
 
 
 def config(filename="database.ini", section="postgresql"):

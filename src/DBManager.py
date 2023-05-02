@@ -1,54 +1,47 @@
 import psycopg2
-from sql.queries import query_create_table_companies, query_create_table_vacancies
 
 
 class DBManager:
-
+    """ Class connects and works with bases"""
     def __init__(self, connection_params: dict, database=None):
-        self.__host = connection_params["host"]
-        self.__user = connection_params["user"]
-        self.__password = connection_params["password"]
-        self.__port = connection_params["port"]
         self.__database = database
+        self.__connection_params = connection_params
 
-    def create_database(self, database: str):
-
-        connection = psycopg2.connect(
-            host=self.__host,
-            database="postgres",
-            user=self.__user,
-            password=self.__password,
-            port=self.__port
-            )
-
+    def create_database(self, new_database: str) -> None:
+        """
+        Create new database
+        :param new_database:  name of new database
+        :return:
+        """
+        self.__connection_params.update({'dbname': "postgres"})
+        connection = psycopg2.connect(**self.__connection_params)
         connection.autocommit = True
+
         try:
             with connection.cursor() as cursor:
-                query_create_base = f"CREATE DATABASE {database}"
+                query_create_base = f"CREATE DATABASE {new_database}"
                 cursor.execute(query_create_base)
-                self.__database = database
-                print(f"База данных {database} успешно создана.")
-
+                self.__database = new_database
+                print(f"База данных {new_database} успешно создана.")
         except psycopg2.Error as er:
-            print(f"БД:{database}. Ошибка с запросом создания БД.\n{er}")
+            print(f"БД:{new_database}. Ошибка с запросом создания БД.\n{er}")
         finally:
             connection.close()
 
-    def create_table(self, table_name: str, query: str):
-
-        connection = psycopg2.connect(
-            host=self.__host,
-            database=self.__database,
-            user=self.__user,
-            password=self.__password,
-            port=self.__port
-        )
+    def create_table(self, table_name: str, query: str) -> None:
+        """
+        Create new table
+        :param table_name: name of table
+        :param query: query for creation table
+        :return:
+        """
+        self.__connection_params.update({'dbname': self.__database})
+        connection = psycopg2.connect(**self.__connection_params)
 
         try:
             with connection:
                 with connection.cursor() as cursor:
                     query_create_table = query
-
                     cursor.execute(query_create_table)
                     connection.commit()
                     print(f"Создание таблицы {table_name} прошло успешно.")
@@ -58,13 +51,15 @@ class DBManager:
             connection.close()
 
     def insert_data(self, table: str, data: list) -> None:
-        connection = psycopg2.connect(
-            host=self.__host,
-            database=self.__database,
-            user=self.__user,
-            password=self.__password,
-            port=self.__port
-        )
+        """
+        Insert new data to database
+        :param table: table name for insert
+        :param data: list with data for processing
+        :return:
+        """
+        self.__connection_params.update({'dbname': self.__database})
+        connection = psycopg2.connect(**self.__connection_params)
+
         try:
             with connection:
                 with connection.cursor() as cursor:
@@ -78,14 +73,14 @@ class DBManager:
         finally:
             connection.close()
 
-    def get_companies_and_vacancies(self):
-        connection = psycopg2.connect(
-            host=self.__host,
-            database=self.__database,
-            user=self.__user,
-            password=self.__password,
-            port=self.__port
-        )
+    def get_companies_and_vacancies(self) -> None:
+        """
+        Get all companies and vacancies count from database
+        :return:
+        """
+        self.__connection_params.update({'dbname': self.__database})
+        connection = psycopg2.connect(**self.__connection_params)
+
         try:
             with connection:
                 with connection.cursor() as cursor:
@@ -102,13 +97,13 @@ class DBManager:
             connection.close()
 
     def get_all_vacancies(self):
-        connection = psycopg2.connect(
-            host=self.__host,
-            database=self.__database,
-            user=self.__user,
-            password=self.__password,
-            port=self.__port
-        )
+        """
+        Get all vacancies from database
+        :return:
+        """
+        self.__connection_params.update({'dbname': self.__database})
+        connection = psycopg2.connect(**self.__connection_params)
+
         try:
             with connection:
                 with connection.cursor() as cursor:
@@ -125,15 +120,14 @@ class DBManager:
         finally:
             connection.close()
 
-    def get_avg_salary_by_company(self):
+    def get_avg_salary_by_company(self) -> None:
+        """
+        Get average salary for companies from database
+        :return:
+        """
+        self.__connection_params.update({'dbname': self.__database})
+        connection = psycopg2.connect(**self.__connection_params)
 
-        connection = psycopg2.connect(
-            host=self.__host,
-            database=self.__database,
-            user=self.__user,
-            password=self.__password,
-            port=self.__port
-        )
         try:
             with connection:
                 with connection.cursor() as cursor:
@@ -150,15 +144,14 @@ class DBManager:
         finally:
             connection.close()
 
-    def get_avg_salary(self):
+    def get_avg_salary(self) -> None:
+        """
+        Get average salary from all vacancies from database
+        :return:
+        """
+        self.__connection_params.update({'dbname': self.__database})
+        connection = psycopg2.connect(**self.__connection_params)
 
-        connection = psycopg2.connect(
-            host=self.__host,
-            database=self.__database,
-            user=self.__user,
-            password=self.__password,
-            port=self.__port
-        )
         try:
             with connection:
                 with connection.cursor() as cursor:
@@ -174,14 +167,14 @@ class DBManager:
         finally:
             connection.close()
 
-    def get_vacancies_with_higher_salary(self):
-        connection = psycopg2.connect(
-            host=self.__host,
-            database=self.__database,
-            user=self.__user,
-            password=self.__password,
-            port=self.__port
-        )
+    def get_vacancies_with_higher_salary(self) -> None:
+        """
+        Get vacancies with bigger salary than average salary from database
+        :return:
+        """
+        self.__connection_params.update({'dbname': self.__database})
+        connection = psycopg2.connect(**self.__connection_params)
+
         try:
             with connection:
                 with connection.cursor() as cursor:
@@ -199,15 +192,15 @@ class DBManager:
         finally:
             connection.close()
 
-    def get_vacancies_with_keyword(self, search_word: str):
+    def get_vacancies_with_keyword(self, search_word: str) -> None:
+        """
+        Get vacancies that need find from database
+        :param search_word: search filter
+        :return:
+        """
+        self.__connection_params.update({'dbname': self.__database})
+        connection = psycopg2.connect(**self.__connection_params)
 
-        connection = psycopg2.connect(
-            host=self.__host,
-            database=self.__database,
-            user=self.__user,
-            password=self.__password,
-            port=self.__port
-        )
         try:
             with connection:
                 with connection.cursor() as cursor:

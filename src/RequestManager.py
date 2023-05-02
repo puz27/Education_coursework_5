@@ -1,13 +1,28 @@
 import requests
+import time
+from tqdm import tqdm
 
 
 class RequestManager:
-
+    """ Class gets data from HEAD HUNTER"""
     def __init__(self):
-        self.companies_data = []
-        self.vacancies_data = []
+        self.__companies_data = []
+        self.__vacancies_data = []
 
-    def get_request(self, company_name: str):
+    @property
+    def companies_data(self) -> list:
+        return self.__companies_data
+
+    @property
+    def vacancies_data(self) -> list:
+        return self.__vacancies_data
+
+    def get_request(self, company_name: str) -> None or str:
+        """
+        Get data from HEAD HUNTER
+        :param company_name: filter for search company and vacancies
+        :return: list with
+        """
 
         url_company = "https://api.hh.ru/employers"
         url_vacancy = "https://api.hh.ru/vacancies"
@@ -15,61 +30,63 @@ class RequestManager:
         params_company = {
             "text": company_name,
             "only_with_vacancies": "true",
-            "per_page": 25,
+            "per_page": 10,
             "page": 0,
         }
+
         response = requests.get(url_company, params=params_company)
         if response.status_code == 200:
             all_companies = response.json()["items"]
-            for company in all_companies:
+            for _ in tqdm(range(10), ncols=80, ascii=True, desc='Total'):
 
-                # Url for vacancies if company
-                one_company = (company["id"],
-                               company["name"])
-                self.companies_data.append(one_company)
+                for company in all_companies:
 
-                # Get information about vacancies in company
-                employer_id = company["id"]
-                page_number = 0
-                last_page = 1
+                    # Url for vacancies if company
+                    one_company = (company["id"],
+                                   company["name"])
+                    self.__companies_data.append(one_company)
 
-                while page_number < last_page:
+                    # Get information about vacancies in company
+                    employer_id = company["id"]
+                    page_number = 0
+                    last_page = 1
 
-                    params_vacancy = {
-                        "per_page": 50,
-                        "employer_id": employer_id,
-                        "page": page_number
-                    }
+                    while page_number < last_page:
 
-                    vacancy_response = requests.get(url_vacancy, params=params_vacancy)
+                        params_vacancy = {
+                            "per_page": 50,
+                            "employer_id": employer_id,
+                            "page": page_number
+                        }
 
-                    vacancies_of_company = vacancy_response.json()["items"]
+                        vacancy_response = requests.get(url_vacancy, params=params_vacancy)
+                        vacancies_of_company = vacancy_response.json()["items"]
 
-                    for vacancy in vacancies_of_company:
-
-                        if vacancy["salary"] is None:
-                            salary_from = 0
-                            salary_to = 0
-                        else:
-                            if vacancy["salary"]["from"] is not None:
-                                salary_from = int(vacancy["salary"]["from"])
-                            else:
+                        for vacancy in vacancies_of_company:
+                            if vacancy["salary"] is None:
                                 salary_from = 0
-
-                            if vacancy["salary"]["to"] is not None:
-                                salary_to = int(vacancy["salary"]["to"])
-                            else:
                                 salary_to = 0
-                        # print(vacancy)
-                        one_vacancy = (vacancy["id"],
-                                       company["id"],
-                                       vacancy["name"],
-                                       vacancy["url"],
-                                       salary_from,
-                                       salary_to,
-                                       vacancy["area"]["name"])
-                        self.vacancies_data.append(one_vacancy)
+                            else:
+                                if vacancy["salary"]["from"] is not None:
+                                    salary_from = int(vacancy["salary"]["from"])
+                                else:
+                                    salary_from = 0
 
-                    page_number += 1
+                                if vacancy["salary"]["to"] is not None:
+                                    salary_to = int(vacancy["salary"]["to"])
+                                else:
+                                    salary_to = 0
+
+                            one_vacancy = (vacancy["id"],
+                                           company["id"],
+                                           vacancy["name"],
+                                           vacancy["url"],
+                                           salary_from,
+                                           salary_to,
+                                           vacancy["area"]["name"])
+                            self.__vacancies_data.append(one_vacancy)
+
+                        page_number += 1
+                time.sleep(1)
         else:
             return "Error:", response.status_code

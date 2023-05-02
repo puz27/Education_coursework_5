@@ -1,3 +1,4 @@
+import tqdm
 from src.RequestManager import RequestManager
 from src.DBManager import DBManager
 from sql.queries import query_create_table_companies, query_create_table_vacancies
@@ -36,6 +37,7 @@ def main_processing():
 
         # Request to HEAD HUNTER
         if user_answer_hh == user_menu_hh[" 1.Сделать запрос к HEAD HUNTER.\n"]:
+
             all_companies = ["Газпром", "Yandex", "МТС", "ПИК", "Ланит"]
             for company in all_companies:
                 print(f"Обрабатываем {company}.")
@@ -48,6 +50,7 @@ def main_processing():
 
         # Custom request to HEAD HUNTER
         elif user_answer_hh == user_menu_hh["3.Кастомный запрос к HEAD HUNTER.\n"]:
+
             user_query = input("Введите название компании.\n")
             head_hunter_data.get_request(user_query)
             companies_data, vacancies_data = head_hunter_data.companies_data, head_hunter_data.vacancies_data
