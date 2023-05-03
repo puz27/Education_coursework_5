@@ -1,11 +1,10 @@
 from src.RequestManager import RequestManager
 from src.DBManager import DBManager
-from sql.queries import query_create_table_companies, query_create_table_vacancies
 from src.utils import config, user_menu_hh, user_menu
 
 
 def main_processing():
-    # user settings
+    # User settings
     connection_params = config()
 
     # create/not create base
@@ -21,13 +20,12 @@ def main_processing():
             print(f"Создаем БД {user_base_name}.")
             connector_to_db = DBManager(connection_params, user_base_name)
             connector_to_db.create_database(user_base_name)
-            connector_to_db.create_table("companies", query_create_table_companies)
-            connector_to_db.create_table("vacancies", query_create_table_vacancies)
+            connector_to_db.create_tables()
             break
         else:
             print("Некорректный ввод.")
 
-    # request to HEAD HUNTER
+    # Request to HEAD HUNTER
     head_hunter_data = RequestManager()
     while True:
 

@@ -1,4 +1,5 @@
 import psycopg2
+import os
 from src.utils import connection_to_db
 
 
@@ -17,36 +18,43 @@ class DBManager:
         connection = psycopg2.connect(**self.__connection_params)
         connection.autocommit = True
 
+        # Create database
         try:
             with connection.cursor() as cursor:
                 query_create_base = f"CREATE DATABASE {new_database}"
                 cursor.execute(query_create_base)
                 self.__database = new_database
                 print(f"База данных {new_database} успешно создана.")
-        except psycopg2.Error as er:
+        except Exception as er:
             print(f"БД:{new_database}. Ошибка с запросом создания БД.\n{er}")
         finally:
             connection.close()
 
-    def create_table(self, table_name: str, query: str) -> None:
+    def create_tables(self) -> None:
         """
-        Create new table
-        :param table_name: name of table
-        :param query: query for creation table
+        Create new tables
         :return:
         """
         self.__connection_params.update({'dbname': self.__database})
         connection = psycopg2.connect(**self.__connection_params)
 
+        # Read file with queries
+        try:
+            query_file = os.path.join(os.getcwd(), "sql", "queries.sql")
+            with open(query_file, "r", encoding='utf-8') as read_file:
+                query_create_tables = read_file.read()
+        except FileNotFoundError as error:
+            print(f"Файл с запросами не найден:{error}")
+
+        # Create tables
         try:
             with connection:
                 with connection.cursor() as cursor:
-                    query_create_table = query
-                    cursor.execute(query_create_table)
+                    cursor.execute(query_create_tables)
                     connection.commit()
-                    print(f"Создание таблицы {table_name} прошло успешно.")
-        except psycopg2.Error as er:
-            print(f"Ошибка с запросом при создании таблицы {table_name}.\n{er}")
+                    print(f"Создание таблиц прошло успешно.")
+        except Exception as er:
+            print(f"Ошибка с запросом при создании таблиц.\n{er}")
         finally:
             connection.close()
 

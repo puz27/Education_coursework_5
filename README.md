@@ -19,8 +19,7 @@
 * src/RequestManager.py описание класса для взаимодействия с HEAD HUNTER
 * src/utils.py: дополнительные функции для обработки и словарь с меню пользователя
 * src/processing.py основной код обработки
-* sql/queries.py сюда вынесены запросы для создания БД
-* sql/queries.sql SQL запросы, которые использовались
+* sql/queries.sql SQL запросы, для создания таблиц в БД
 * database.ini - файл конфигурации подключения к БД
 * main.py
 * README.md
