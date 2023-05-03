@@ -1,4 +1,3 @@
-import tqdm
 from src.RequestManager import RequestManager
 from src.DBManager import DBManager
 from sql.queries import query_create_table_companies, query_create_table_vacancies
@@ -106,7 +105,8 @@ def main_processing():
             input("Для продолжения нажмите Enter...\n")
 
         # Get_vacancies_with_keyword
-        elif user_answer == user_menu["6.Получить список всех вакансий, в названии которых содержатся переданные слова.\n"]:
+        elif user_answer == user_menu["6.Получить список всех вакансий, " \
+                                      "в названии которых содержатся переданные слова.\n"]:
             user_keyword = input("Введите слово для поиска.\n")
             connector_to_db.get_vacancies_with_keyword(user_keyword)
             input("Для продолжения нажмите Enter...\n")

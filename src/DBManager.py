@@ -1,4 +1,5 @@
 import psycopg2
+from src.utils import connection_to_db
 
 
 class DBManager:
@@ -79,47 +80,26 @@ class DBManager:
         """
         self.__connection_params.update({'dbname': self.__database})
         connection = psycopg2.connect(**self.__connection_params)
+        query = f"""
+        select company_name, COUNT(*) from companies
+        INNER JOIN vacancies USING (company_id)
+        GROUP BY company_name
+        ORDER BY company_name"""
+        connection_to_db(connection, query)
 
-        try:
-            with connection:
-                with connection.cursor() as cursor:
-                    query = f"""select company_name, COUNT(*) from companies
-                    INNER JOIN vacancies USING (company_id)
-                    GROUP BY company_name
-                    ORDER BY company_name"""
-                    cursor.execute(query)
-                    connection.commit()
-                    for company in (cursor.fetchall()):
-                        print(*company)
-        except psycopg2.Error as er:
-            print(f"Ошибка с запросом.\n{er}")
-        finally:
-            connection.close()
-
-    def get_all_vacancies(self):
+    def get_all_vacancies(self) -> None:
         """
         Get all vacancies from database
         :return:
         """
         self.__connection_params.update({'dbname': self.__database})
         connection = psycopg2.connect(**self.__connection_params)
-
-        try:
-            with connection:
-                with connection.cursor() as cursor:
-                    query = f"""
-                    select company_name, vacancy_name,
-                    vacancy_salary_from, vacancy_salary_to, vacancy_url  from vacancies
-                    INNER JOIN companies USING (company_id)
-                    ORDER BY company_name"""
-                    cursor.execute(query)
-                    connection.commit()
-                    for vacancy in (cursor.fetchall()):
-                        print(*vacancy)
-        except psycopg2.Error as er:
-            print(f"Ошибка с запросом.\n{er}")
-        finally:
-            connection.close()
+        query = f"""
+        select company_name, vacancy_name,
+        vacancy_salary_from, vacancy_salary_to, vacancy_url  from vacancies
+        INNER JOIN companies USING (company_id)
+        ORDER BY company_name"""
+        connection_to_db(connection, query)
 
     def get_avg_salary_by_company(self) -> None:
         """
@@ -128,23 +108,12 @@ class DBManager:
         """
         self.__connection_params.update({'dbname': self.__database})
         connection = psycopg2.connect(**self.__connection_params)
-
-        try:
-            with connection:
-                with connection.cursor() as cursor:
-                    query = f"""
-                    SELECT company_name, AVG(vacancy_salary_from)::numeric(10,0) AS average_salary FROM companies
-                    INNER JOIN vacancies USING (company_id) WHERE vacancy_salary_from <> 0
-                    GROUP BY company_name
-                    ORDER BY average_salary DESC"""
-                    cursor.execute(query)
-                    connection.commit()
-                    for vacancy in (cursor.fetchall()):
-                        print(*vacancy)
-        except psycopg2.Error as er:
-            print(f"Ошибка с запросом.\n{er}")
-        finally:
-            connection.close()
+        query = f"""
+        SELECT company_name, AVG(vacancy_salary_from)::numeric(10,0) AS average_salary FROM companies
+        INNER JOIN vacancies USING (company_id) WHERE vacancy_salary_from <> 0
+        GROUP BY company_name
+        ORDER BY average_salary DESC"""
+        connection_to_db(connection, query)
 
     def get_avg_salary(self) -> None:
         """
@@ -153,21 +122,8 @@ class DBManager:
         """
         self.__connection_params.update({'dbname': self.__database})
         connection = psycopg2.connect(**self.__connection_params)
-
-        try:
-            with connection:
-                with connection.cursor() as cursor:
-                    query = f"""
-                    SELECT AVG(vacancy_salary_from)::numeric(10,0) FROM vacancies
-                    """
-                    cursor.execute(query)
-                    connection.commit()
-                    for vacancy in (cursor.fetchall()):
-                        print(*vacancy)
-        except psycopg2.Error as er:
-            print(f"Ошибка с запросом.\n{er}")
-        finally:
-            connection.close()
+        query = f"""SELECT AVG(vacancy_salary_from)::numeric(10,0) FROM vacancies"""
+        connection_to_db(connection, query)
 
     def get_vacancies_with_higher_salary(self) -> None:
         """
@@ -176,23 +132,11 @@ class DBManager:
         """
         self.__connection_params.update({'dbname': self.__database})
         connection = psycopg2.connect(**self.__connection_params)
-
-        try:
-            with connection:
-                with connection.cursor() as cursor:
-                    query = f"""
-                    SELECT vacancy_name, vacancy_salary_from FROM vacancies
-                    WHERE vacancies.vacancy_salary_from <> 0 AND vacancy_salary_from > (SELECT AVG(vacancy_salary_from) FROM vacancies)
-                    ORDER BY vacancy_salary_from DESC
-                    """
-                    cursor.execute(query)
-                    connection.commit()
-                    for vacancy in (cursor.fetchall()):
-                        print(*vacancy)
-        except psycopg2.Error as er:
-            print(f"Ошибка с запросом.\n{er}")
-        finally:
-            connection.close()
+        query = f"""
+        SELECT vacancy_name, vacancy_salary_from FROM vacancies
+        WHERE vacancies.vacancy_salary_from <> 0 AND vacancy_salary_from > (SELECT AVG(vacancy_salary_from) FROM vacancies)
+        ORDER BY vacancy_salary_from DESC"""
+        connection_to_db(connection, query)
 
     def get_vacancies_with_keyword(self, search_word: str) -> None:
         """
