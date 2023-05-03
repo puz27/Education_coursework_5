@@ -13,7 +13,6 @@ class DBManager:
         :param new_database:  name of new database
         :return:
         """
-        self.__connection_params.update({'dbname': "postgres"})
         connection = psycopg2.connect(**self.__connection_params)
         connection.autocommit = True
 
@@ -84,9 +83,10 @@ class DBManager:
         try:
             with connection:
                 with connection.cursor() as cursor:
-                    query = f"""select companies.company_name, COUNT(*) from companies
+                    query = f"""select company_name, COUNT(*) from companies
                     INNER JOIN vacancies USING (company_id)
-                    GROUP BY company_name"""
+                    GROUP BY company_name
+                    ORDER BY company_name"""
                     cursor.execute(query)
                     connection.commit()
                     for company in (cursor.fetchall()):
@@ -108,9 +108,10 @@ class DBManager:
             with connection:
                 with connection.cursor() as cursor:
                     query = f"""
-                    select companies.company_name, vacancy_name,
+                    select company_name, vacancy_name,
                     vacancy_salary_from, vacancy_salary_to, vacancy_url  from vacancies
-                    INNER JOIN companies USING (company_id)"""
+                    INNER JOIN companies USING (company_id)
+                    ORDER BY company_name"""
                     cursor.execute(query)
                     connection.commit()
                     for vacancy in (cursor.fetchall()):
@@ -132,9 +133,10 @@ class DBManager:
             with connection:
                 with connection.cursor() as cursor:
                     query = f"""
-                    SELECT companies.company_name, AVG(vacancies.vacancy_salary_from)::numeric(10,0)  AS average_salary FROM companies
-                    INNER JOIN vacancies USING (company_id) WHERE vacancies.vacancy_salary_from <> 0
-                    GROUP BY company_name"""
+                    SELECT company_name, AVG(vacancy_salary_from)::numeric(10,0) AS average_salary FROM companies
+                    INNER JOIN vacancies USING (company_id) WHERE vacancy_salary_from <> 0
+                    GROUP BY company_name
+                    ORDER BY average_salary DESC"""
                     cursor.execute(query)
                     connection.commit()
                     for vacancy in (cursor.fetchall()):

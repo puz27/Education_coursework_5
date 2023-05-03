@@ -30,63 +30,64 @@ class RequestManager:
         params_company = {
             "text": company_name,
             "only_with_vacancies": "true",
-            "per_page": 10,
+            "per_page": 15,
             "page": 0,
         }
 
         response = requests.get(url_company, params=params_company)
         if response.status_code == 200:
             all_companies = response.json()["items"]
-            for _ in tqdm(range(10), ncols=80, ascii=True, desc='Total'):
+            for _ in tqdm(range(100), ncols=80, ascii=True, desc='Total'):
+                time.sleep(0.01)
+            for company in all_companies:
 
-                for company in all_companies:
+                # Url for vacancies if company
+                one_company = (company["id"], company["name"])
+                self.__companies_data.append(one_company)
 
-                    # Url for vacancies if company
-                    one_company = (company["id"],
-                                   company["name"])
-                    self.__companies_data.append(one_company)
+                # Get information about vacancies in company
+                employer_id = company["id"]
+                page_number = 0
+                last_page = 1
 
-                    # Get information about vacancies in company
-                    employer_id = company["id"]
-                    page_number = 0
-                    last_page = 1
+                while page_number < last_page:
 
-                    while page_number < last_page:
+                    params_vacancy = {
+                        "per_page": 100,
+                        "employer_id": employer_id,
+                        "page": page_number
+                    }
 
-                        params_vacancy = {
-                            "per_page": 50,
-                            "employer_id": employer_id,
-                            "page": page_number
-                        }
+                    vacancy_response = requests.get(url_vacancy, params=params_vacancy)
+                    vacancies_of_company = vacancy_response.json()["items"]
 
-                        vacancy_response = requests.get(url_vacancy, params=params_vacancy)
-                        vacancies_of_company = vacancy_response.json()["items"]
-
-                        for vacancy in vacancies_of_company:
-                            if vacancy["salary"] is None:
-                                salary_from = 0
-                                salary_to = 0
+                    for vacancy in vacancies_of_company:
+                        if vacancy["salary"] is None:
+                            salary_from = 0
+                            salary_to = 0
+                        else:
+                            if vacancy["salary"]["from"] is not None:
+                                salary_from = int(vacancy["salary"]["from"])
                             else:
-                                if vacancy["salary"]["from"] is not None:
-                                    salary_from = int(vacancy["salary"]["from"])
-                                else:
-                                    salary_from = 0
+                                salary_from = 0
 
-                                if vacancy["salary"]["to"] is not None:
-                                    salary_to = int(vacancy["salary"]["to"])
-                                else:
-                                    salary_to = 0
+                            if vacancy["salary"]["to"] is not None:
+                                salary_to = int(vacancy["salary"]["to"])
+                            else:
+                                salary_to = 0
 
-                            one_vacancy = (vacancy["id"],
-                                           company["id"],
-                                           vacancy["name"],
-                                           vacancy["url"],
-                                           salary_from,
-                                           salary_to,
-                                           vacancy["area"]["name"])
-                            self.__vacancies_data.append(one_vacancy)
+                        one_vacancy = (vacancy["id"],
+                                       company["id"],
+                                       vacancy["name"],
+                                       vacancy["url"],
+                                       salary_from,
+                                       salary_to,
+                                       vacancy["area"]["name"])
+                        self.__vacancies_data.append(one_vacancy)
 
-                        page_number += 1
-                time.sleep(1)
+                    page_number += 1
+
+
+
         else:
             return "Error:", response.status_code

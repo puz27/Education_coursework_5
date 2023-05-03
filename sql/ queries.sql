@@ -23,25 +23,28 @@ CONSTRAINT chk_salary_to CHECK(vacancy_salary_to >= 0)
 --- Get all companies and vacancies count from database
 ---
 
-select companies.company_name, COUNT(*) from companies
+select company_name, COUNT(*) from companies
 INNER JOIN vacancies USING (company_id)
-GROUP BY company_name;
+GROUP BY company_name
+ORDER BY company_name;
 
 ---
 --- Get all vacancies from database
 ---
 
-select companies.company_name, vacancy_name,
+select company_name, vacancy_name,
 vacancy_salary_from, vacancy_salary_to, vacancy_url  from vacancies
-INNER JOIN companies USING (company_id);
+INNER JOIN companies USING (company_id)
+ORDER BY company_name;
 
 ---
 --- Get average salary for companies from database
 ---
 
-SELECT companies.company_name, AVG(vacancies.vacancy_salary_from)::numeric(10,0)  AS average_salary FROM companies
-INNER JOIN vacancies USING (company_id) WHERE vacancies.vacancy_salary_from <> 0
-GROUP BY company_name;
+SELECT company_name, AVG(vacancy_salary_from)::numeric(10,0) AS average_salary FROM companies
+INNER JOIN vacancies USING (company_id) WHERE vacancy_salary_from <> 0
+GROUP BY company_name
+ORDER BY average_salary DESC;
 
 ---
 --- Get average salary from all vacancies from database
