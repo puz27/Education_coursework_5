@@ -2,7 +2,7 @@ from configparser import ConfigParser
 import psycopg2
 
 
-def config(filename="database.ini", section="postgresql"):
+def config(filename="database.ini", section="postgresql") -> dict:
     """
     Get configuration for connection to database
     :param filename: name of configuration file
@@ -22,25 +22,29 @@ def config(filename="database.ini", section="postgresql"):
     return db
 
 
-def connection_to_db(connection: psycopg2, query_db: str) -> None:
+def connection_to_db(connection_params: dict, query_db: str) -> None:
     """
     Connect to database
-    :param connection: configuration for connection
+    :param connection_params: configuration for connection
     :param query_db: query to database
     :return:
     """
     try:
-        with connection:
-            with connection.cursor() as cursor:
-                query = query_db
-                cursor.execute(query)
-                connection.commit()
-                for company in (cursor.fetchall()):
-                    print(*company)
-    except psycopg2.Error as er:
-        print(f"Ошибка с запросом.\n{er}")
-    finally:
-        connection.close()
+        connection = psycopg2.connect(**connection_params)
+        try:
+            with connection:
+                with connection.cursor() as cursor:
+                    query = query_db
+                    cursor.execute(query)
+                    connection.commit()
+                    for company in (cursor.fetchall()):
+                        print(*company)
+        except psycopg2.Error as er:
+            print(f"Ошибка с запросом.\n{er}")
+        finally:
+            connection.close()
+    except psycopg2.OperationalError as er:
+        print(er)
 
 
 # User menu

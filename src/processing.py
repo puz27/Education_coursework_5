@@ -7,7 +7,7 @@ def main_processing():
     # User settings
     connection_params = config()
 
-    # create/not create base
+    # Create/not create base
     while True:
         user_base = input("1 - БД уже существует, 2 - создать новую БД\n")
         if user_base == "1":
