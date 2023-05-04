@@ -28,9 +28,9 @@
 * Пользователь выбирает вариант работы с БД
 ![img_5.png](images/img_5.png)
 * Пользователь выбирает вариант обработки данных из HEAD HUNTER
-![img_2.png](images/img_2.png)
-* Идет обработка данных
 ![img.png](images/img.png)
+* Идет обработка данных
+![img_1.png](images/img_1.png)
 * Пользователь выбирает варианты запросов в БД
 ![img_3.png](images/img_3.png)
 * ERD 
